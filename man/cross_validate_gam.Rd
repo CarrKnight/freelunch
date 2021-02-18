@@ -38,7 +38,7 @@ something more robust.}
 }
 \value{
 A list containing the basic estimation results
-#' \itemize{
+ \itemize{
   \item performance: 1 - the ratio of out-of-sample RMSE of the \code{fit_gam} and RMSE of just using the average (named vector of length equal to the number of parameters)
   \item predictivity: 1 - sum of squared residuals of the \code{fit_gam} and sum of squared residuals when using just the average value (named vector of length equal to the number of parameters)
   \item rmse - Average out of sample RMSE for all the groups in the CV  (named vector of length equal to the number of parameters)

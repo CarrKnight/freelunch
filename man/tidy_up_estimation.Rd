@@ -12,7 +12,7 @@ tidy_up_estimation(estimation)
 }
 \value{
 A data-frame containing the following columns
-#' \itemize{
+ \itemize{
   \item type whether the row is the estimated parameter, its bounds or the real value
   \item run the simulation run index
   \item variable which parameter are we estimating

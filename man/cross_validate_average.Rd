@@ -28,7 +28,7 @@ simulation model}
 }
 \value{
 A list containing the basic estimation results
-#' \itemize{
+ \itemize{
   \item rmse - Average out of sample RMSE for all the groups in the CV  (named vector of length equal to the number of parameters)
   \item contained - The out-of-sample percentage of times the real parameters are contained in the estimated interval;
   \item interval_size - The average range between lower and upper bound of the prediction intervals for each parameter, i.e. how wide our confidence bounds are on average (named vector of length equal to the number of parameters)

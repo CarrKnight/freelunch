@@ -182,7 +182,7 @@ control<-caret::trainControl(method = "cv",
 #' @param degree the degree of the linear regression we are using to map back from summary statistics to parameters
 #' @param bootstrap_n the number of boostrap resamples we run to generate prediction intervals (default is 200)
 #' @return A list containing the basic estimation results
-#' #' \itemize{
+#'  \itemize{
 #'   \item predictions - The estimated values for each parameter (data.frame with as many rows as in \code{target_runs})
 #'   \item lows - Estimated lower bound (2.5th quantile) for each estimated parameter (data.frame with as many rows as in \code{target_runs})
 #'   \item highs - Estimated upper bound (97.5th quantile) for each estimated parameter (data.frame with as many rows as in \code{target_runs})
@@ -361,7 +361,7 @@ fit_linear_regression<-function(
 #' @param degree the degree of the linear regression we are using to map back from summary statistics to parameters
 #' @param cv_seed random seed controlling how CV groups are formed: keep it constant to compare cross-validations across methods
 #' @return A list containing the basic estimation results
-#' #' \itemize{
+#'  \itemize{
 #'   \item performance: 1 - the ratio of out-of-sample RMSE of the \code{fit_linear_regression} and RMSE of just using the average (named vector of length equal to the number of parameters)
 #'   \item predictivity: 1 - sum of squared residuals of the \code{fit_linear_regression} and sum of squared residuals when using just the average value (named vector of length equal to the number of parameters)
 #'   \item rmse - Average out of sample RMSE for all the groups in the CV  (named vector of length equal to the number of parameters)
@@ -585,7 +585,7 @@ abc_testing<-function(training_runs,target_runs,tol=DEFAULT_TOL,parameter_colnam
 #' @param tol tolerance error for ABC: in practice what % of the original runs end up forming the posterior (default is 0.1)
 #' @param \dots other arguments passed to the \code{abc::abc} method
 #' @return A list containing the basic estimation results
-#' #' \itemize{
+#'  \itemize{
 #'   \item predictions - The estimated values for each parameter (data.frame with as many rows as in \code{target_runs})
 #'   \item lows - Estimated lower bound (2.5th quantile) for each estimated parameter (data.frame with as many rows as in \code{target_runs})
 #'   \item highs - Estimated upper bound (97.5th quantile) for each estimated parameter (data.frame with as many rows as in \code{target_runs})
@@ -672,7 +672,7 @@ fit_rejection_abc<-function(training_runs,target_runs,
 #' @param cv_seed random seed controlling how CV groups are formed: keep it constant to compare cross-validations across methods
 #' @param \dots passed to the abc fitting method
 #' @return A list containing the basic estimation results
-#' #' \itemize{
+#'  \itemize{
 #'   \item performance: 1 - the ratio of out-of-sample RMSE of the \code{fit_rejection_abc} and RMSE of just using the average (named vector of length equal to the number of parameters)
 #'   \item predictivity: 1 - sum of squared residuals of the \code{fit_rejection_abc} and sum of squared residuals when using just the average value (named vector of length equal to the number of parameters)
 #'   \item rmse - Average out of sample RMSE for all the groups in the CV  (named vector of length equal to the number of parameters)
@@ -747,7 +747,7 @@ cross_validate_rejection_abc<-function(total_data,ngroup=5,
 #' @param tol tolerance error for ABC: in practice what % of the original runs end up forming the posterior (default is 0.1)
 #' @param \dots other arguments passed to the \code{abc::abc} method
 #' @return A list containing the basic estimation results
-#' #' \itemize{
+#'  \itemize{
 #'   \item predictions - The estimated values for each parameter (data.frame with as many rows as in \code{target_runs})
 #'   \item lows - Estimated lower bound (2.5th quantile) for each estimated parameter (data.frame with as many rows as in \code{target_runs})
 #'   \item highs - Estimated upper bound (97.5th quantile) for each estimated parameter (data.frame with as many rows as in \code{target_runs})
@@ -838,7 +838,7 @@ fit_semiauto_abc<-function(training_runs,target_runs,
 #' @param cv_seed random seed controlling how CV groups are formed: keep it constant to compare cross-validations across methods
 #' @param \dots passed to the abc fitting method
 #' @return A list containing the basic estimation results
-#' #' \itemize{
+#'  \itemize{
 #'   \item performance: 1 - the ratio of out-of-sample RMSE of the \code{fit_semiauto_abc} and RMSE of just using the average (named vector of length equal to the number of parameters)
 #'   \item predictivity: 1 - sum of squared residuals of the \code{fit_semiauto_abc} and sum of squared residuals when using just the average value (named vector of length equal to the number of parameters)
 #'   \item rmse - Average out of sample RMSE for all the groups in the CV  (named vector of length equal to the number of parameters)
@@ -915,7 +915,7 @@ cross_validate_semiauto_abc<-function(total_data,ngroup=5,
 #' @param tol tolerance error for ABC: in practice what % of the original runs end up forming the posterior (default is 0.1)
 #' @param \dots other arguments passed to the \code{abc::abc} method
 #' @return A list containing the basic estimation results
-#' #' \itemize{
+#'  \itemize{
 #'   \item predictions - The estimated values for each parameter (data.frame with as many rows as in \code{target_runs})
 #'   \item lows - Estimated lower bound (2.5th quantile) for each estimated parameter (data.frame with as many rows as in \code{target_runs})
 #'   \item highs - Estimated upper bound (97.5th quantile) for each estimated parameter (data.frame with as many rows as in \code{target_runs})
@@ -1005,7 +1005,7 @@ fit_neural_network_abc<-function(training_runs,target_runs,
 #' @param cv_seed random seed controlling how CV groups are formed: keep it constant to compare cross-validations across methods
 #' @param \dots passed to the abc fitting method
 #' @return A list containing the basic estimation results
-#' #' \itemize{
+#'  \itemize{
 #'   \item performance: 1 - the ratio of out-of-sample RMSE of the \code{fit_neural_network_abc} and RMSE of just using the average (named vector of length equal to the number of parameters)
 #'   \item predictivity: 1 - sum of squared residuals of the \code{fit_neural_network_abc} and sum of squared residuals when using just the average value (named vector of length equal to the number of parameters)
 #'   \item rmse - Average out of sample RMSE for all the groups in the CV  (named vector of length equal to the number of parameters)
@@ -1079,7 +1079,7 @@ cross_validate_neural_network_abc<-function(total_data,ngroup=5,
 #' @param tol tolerance error for ABC: in practice what % of the original runs end up forming the posterior (default is 0.1)
 #' @param \dots other arguments passed to the \code{abc::abc} method
 #' @return A list containing the basic estimation results
-#' #' \itemize{
+#'  \itemize{
 #'   \item predictions - The estimated values for each parameter (data.frame with as many rows as in \code{target_runs})
 #'   \item lows - Estimated lower bound (2.5th quantile) for each estimated parameter (data.frame with as many rows as in \code{target_runs})
 #'   \item highs - Estimated upper bound (97.5th quantile) for each estimated parameter (data.frame with as many rows as in \code{target_runs})
@@ -1168,7 +1168,7 @@ fit_loclinear_abc<-function(training_runs,target_runs,
 #' @param cv_seed random seed controlling how CV groups are formed: keep it constant to compare cross-validations across methods
 #' @param \dots passed to the abc fitting method
 #' @return A list containing the basic estimation results
-#' #' \itemize{
+#'  \itemize{
 #'   \item performance: 1 - the ratio of out-of-sample RMSE of the \code{fit_loclinear_abc} and RMSE of just using the average (named vector of length equal to the number of parameters)
 #'   \item predictivity: 1 - sum of squared residuals of the \code{fit_loclinear_abc} and sum of squared residuals when using just the average value (named vector of length equal to the number of parameters)
 #'   \item rmse - Average out of sample RMSE for all the groups in the CV  (named vector of length equal to the number of parameters)
@@ -1266,7 +1266,7 @@ cross_validate_loclinear_abc<-function(total_data,ngroup=5,
 #' @param summary_statistics_colnames The name of the columns in the training_runs data.frame that represent the summary statistics
 #' (outputs) of the simulation model
 #' @return A list containing the basic estimation results
-#' #' \itemize{
+#'  \itemize{
 #'   \item predictions - The estimated values for each parameter (data.frame with as many rows as in \code{target_runs})
 #'   \item lows - Estimated lower bound (2.5th quantile) for each estimated parameter (data.frame with as many rows as in \code{target_runs})
 #'   \item highs - Estimated upper bound (97.5th quantile) for each estimated parameter (data.frame with as many rows as in \code{target_runs})
@@ -1416,7 +1416,7 @@ fit_quantile_random_forest<-function(
 #' (outputs) of the simulation model
 #' @param cv_seed random seed controlling how CV groups are formed: keep it constant to compare cross-validations across methods
 #' @return A list containing the basic estimation results
-#' #' \itemize{
+#'  \itemize{
 #'   \item performance: 1 - the ratio of out-of-sample RMSE of the \code{fit_quantile_random_forest} and RMSE of just using the average (named vector of length equal to the number of parameters)
 #'   \item predictivity: 1 - sum of squared residuals of the \code{fit_quantile_random_forest} and sum of squared residuals when using just the average value (named vector of length equal to the number of parameters)
 #'   \item rmse - Average out of sample RMSE for all the groups in the CV  (named vector of length equal to the number of parameters)
@@ -1490,7 +1490,7 @@ cross_validate_quantile_random_forest<-function(total_data,ngroup=5,
 #' instead use the default \code{ranger} parameters. This is FALSE by default to replicate the paper's result, but in my experience
 #' setting it to TRUE speeds up the process tenfold for a minor hit in performance.
 #' @return A list containing the basic estimation results
-#' #' \itemize{
+#'  \itemize{
 #'   \item predictions - The estimated values for each parameter (data.frame with as many rows as in \code{target_runs})
 #'   \item lows - Estimated lower bound (2.5th quantile) for each estimated parameter (data.frame with as many rows as in \code{target_runs})
 #'   \item highs - Estimated upper bound (97.5th quantile) for each estimated parameter (data.frame with as many rows as in \code{target_runs})
@@ -1685,7 +1685,7 @@ fit_random_forest<-function(
 #' instead use the default \code{ranger} parameters. This is FALSE by default to replicate the paper's result, but in my experience
 #' setting it to TRUE speeds up the process tenfold for a minor hit in performance.
 #' @return A list containing the basic estimation results
-#' #' \itemize{
+#'  \itemize{
 #'   \item performance: 1 - the ratio of out-of-sample RMSE of the \code{fit_random_forest} and RMSE of just using the average (named vector of length equal to the number of parameters)
 #'   \item predictivity: 1 - sum of squared residuals of the \code{fit_random_forest} and sum of squared residuals when using just the average value (named vector of length equal to the number of parameters)
 #'   \item rmse - Average out of sample RMSE for all the groups in the CV  (named vector of length equal to the number of parameters)
@@ -1763,7 +1763,7 @@ cross_validate_random_forest<-function(total_data,ngroup=5,
 #' @param bam defauls to FALSE, when it's true it switches optimizer mgcv uses (akin to using mgcv:bam AND setting discrete to True) to
 #' something more robust.
 #' @return A list containing the basic estimation results
-#' #' \itemize{
+#'  \itemize{
 #'   \item predictions - The estimated values for each parameter (data.frame with as many rows as in \code{target_runs})
 #'   \item lows - Estimated lower bound (2.5th quantile) for each estimated parameter (data.frame with as many rows as in \code{target_runs})
 #'   \item highs - Estimated upper bound (97.5th quantile) for each estimated parameter (data.frame with as many rows as in \code{target_runs})
@@ -1948,7 +1948,7 @@ fit_gam<-function(
 #' @param cv_seed random seed controlling how CV groups are formed: keep it constant to compare cross-validations across methods
 #' @param \dots passed to the fitting method
 #' @return A list containing the basic estimation results
-#' #' \itemize{
+#'  \itemize{
 #'   \item performance: 1 - the ratio of out-of-sample RMSE of the \code{fit_gam} and RMSE of just using the average (named vector of length equal to the number of parameters)
 #'   \item predictivity: 1 - sum of squared residuals of the \code{fit_gam} and sum of squared residuals when using just the average value (named vector of length equal to the number of parameters)
 #'   \item rmse - Average out of sample RMSE for all the groups in the CV  (named vector of length equal to the number of parameters)
@@ -2015,7 +2015,7 @@ cross_validate_gam<-function(total_data,ngroup=5,
 #' (outputs) of the simulation model
 #' @param cv_seed random seed controlling how CV groups are formed: keep it constant to compare cross-validations across methods
 #' @return A list containing the basic estimation results
-#' #' \itemize{
+#'  \itemize{
 #'   \item rmse - Average out of sample RMSE for all the groups in the CV  (named vector of length equal to the number of parameters)
 #'   \item contained - The out-of-sample percentage of times the real parameters are contained in the estimated interval;
 #'   \item interval_size - The average range between lower and upper bound of the prediction intervals for each parameter, i.e. how wide our confidence bounds are on average (named vector of length equal to the number of parameters)
@@ -2072,7 +2072,7 @@ cross_validate_average<-function(total_data,ngroup=5,
 #' @param bam defauls to FALSE, when it's true it switches optimizer mgcv uses (akin to using mgcv:bam AND setting discrete to True) to
 #' something more robust.
 #' @return A list containing the basic estimation results
-#' #' \itemize{
+#'  \itemize{
 #'   \item predictions - The estimated values for each parameter (data.frame with as many rows as in \code{target_runs})
 #'   \item lows - Estimated lower bound (2.5th quantile) for each estimated parameter (data.frame with as many rows as in \code{target_runs})
 #'   \item highs - Estimated upper bound (97.5th quantile) for each estimated parameter (data.frame with as many rows as in \code{target_runs})
@@ -2180,7 +2180,7 @@ fit_average<-function(
 #'
 #' @param estimation the output of one of the \code{fit_} or \code{cross_validate_} calls in this package
 #' @return A data-frame containing the following columns
-#' #' \itemize{
+#'  \itemize{
 #'   \item type whether the row is the estimated parameter, its bounds or the real value
 #'   \item run the simulation run index
 #'   \item variable which parameter are we estimating

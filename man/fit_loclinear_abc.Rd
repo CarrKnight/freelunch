@@ -35,7 +35,7 @@ simulation model}
 }
 \value{
 A list containing the basic estimation results
-#' \itemize{
+ \itemize{
   \item predictions - The estimated values for each parameter (data.frame with as many rows as in \code{target_runs})
   \item lows - Estimated lower bound (2.5th quantile) for each estimated parameter (data.frame with as many rows as in \code{target_runs})
   \item highs - Estimated upper bound (97.5th quantile) for each estimated parameter (data.frame with as many rows as in \code{target_runs})

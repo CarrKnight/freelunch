@@ -36,7 +36,7 @@ setting it to TRUE speeds up the process tenfold for a minor hit in performance.
 }
 \value{
 A list containing the basic estimation results
-#' \itemize{
+ \itemize{
   \item performance: 1 - the ratio of out-of-sample RMSE of the \code{fit_random_forest} and RMSE of just using the average (named vector of length equal to the number of parameters)
   \item predictivity: 1 - sum of squared residuals of the \code{fit_random_forest} and sum of squared residuals when using just the average value (named vector of length equal to the number of parameters)
   \item rmse - Average out of sample RMSE for all the groups in the CV  (named vector of length equal to the number of parameters)
