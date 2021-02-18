@@ -32,7 +32,7 @@ simulation model}
 
 \item{cv_seed}{random seed controlling how CV groups are formed: keep it constant to compare cross-validations across methods}
 
-\item{tol}{tolerance error for ABC: in practice what % of the original runs end up forming the posterior (default is 0.1)}
+\item{tol}{tolerance error for ABC: in practice what percentage of the original runs end up forming the posterior (default is 0.1)}
 
 \item{degree}{the degree of the linear regression that projects summary statistics to the space where ABC then takes place}
 

@@ -582,7 +582,7 @@ abc_testing<-function(training_runs,target_runs,tol=DEFAULT_TOL,parameter_colnam
 #' simulation model
 #' @param summary_statistics_colnames The name of the columns in the training_runs data.frame that represent the summary statistics
 #' (outputs) of the simulation model
-#' @param tol tolerance error for ABC: in practice what % of the original runs end up forming the posterior (default is 0.1)
+#' @param tol tolerance error for ABC: in practice what percentage of the original runs end up forming the posterior (default is 0.1)
 #' @param \dots other arguments passed to the \code{abc::abc} method
 #' @return A list containing the basic estimation results
 #'  \itemize{
@@ -668,7 +668,7 @@ fit_rejection_abc<-function(training_runs,target_runs,
 #' simulation model
 #' @param summary_statistics_colnames The name of the columns in the training_runs data.frame that represent the summary statistics
 #' (outputs) of the simulation model
-#' @param tol tolerance error for ABC: in practice what % of the original runs end up forming the posterior (default is 0.1)
+#' @param tol tolerance error for ABC: in practice what percentage of the original runs end up forming the posterior (default is 0.1)
 #' @param cv_seed random seed controlling how CV groups are formed: keep it constant to compare cross-validations across methods
 #' @param \dots passed to the abc fitting method
 #' @return A list containing the basic estimation results
@@ -744,7 +744,7 @@ cross_validate_rejection_abc<-function(total_data,ngroup=5,
 #' @param summary_statistics_colnames The name of the columns in the training_runs data.frame that represent the summary statistics
 #' (outputs) of the simulation model
 #' @param degree the degree of the linear regression that projects summary statistics to the space where ABC then takes place
-#' @param tol tolerance error for ABC: in practice what % of the original runs end up forming the posterior (default is 0.1)
+#' @param tol tolerance error for ABC: in practice what percentage of the original runs end up forming the posterior (default is 0.1)
 #' @param \dots other arguments passed to the \code{abc::abc} method
 #' @return A list containing the basic estimation results
 #'  \itemize{
@@ -834,7 +834,7 @@ fit_semiauto_abc<-function(training_runs,target_runs,
 #' @param summary_statistics_colnames The name of the columns in the training_runs data.frame that represent the summary statistics
 #' (outputs) of the simulation model
 #' @param degree the degree of the linear regression that projects summary statistics to the space where ABC then takes place
-#' @param tol tolerance error for ABC: in practice what % of the original runs end up forming the posterior (default is 0.1)
+#' @param tol tolerance error for ABC: in practice what percentage of the original runs end up forming the posterior (default is 0.1)
 #' @param cv_seed random seed controlling how CV groups are formed: keep it constant to compare cross-validations across methods
 #' @param \dots passed to the abc fitting method
 #' @return A list containing the basic estimation results
@@ -912,7 +912,7 @@ cross_validate_semiauto_abc<-function(total_data,ngroup=5,
 #' simulation model
 #' @param summary_statistics_colnames The name of the columns in the training_runs data.frame that represent the summary statistics
 #' (outputs) of the simulation model
-#' @param tol tolerance error for ABC: in practice what % of the original runs end up forming the posterior (default is 0.1)
+#' @param tol tolerance error for ABC: in practice what percentage of the original runs end up forming the posterior (default is 0.1)
 #' @param \dots other arguments passed to the \code{abc::abc} method
 #' @return A list containing the basic estimation results
 #'  \itemize{
@@ -1001,7 +1001,7 @@ fit_neural_network_abc<-function(training_runs,target_runs,
 #' simulation model
 #' @param summary_statistics_colnames The name of the columns in the training_runs data.frame that represent the summary statistics
 #' (outputs) of the simulation model
-#' @param tol tolerance error for ABC: in practice what % of the original runs end up forming the posterior (default is 0.1)
+#' @param tol tolerance error for ABC: in practice what percentage of the original runs end up forming the posterior (default is 0.1)
 #' @param cv_seed random seed controlling how CV groups are formed: keep it constant to compare cross-validations across methods
 #' @param \dots passed to the abc fitting method
 #' @return A list containing the basic estimation results
@@ -1076,7 +1076,7 @@ cross_validate_neural_network_abc<-function(total_data,ngroup=5,
 #' simulation model
 #' @param summary_statistics_colnames The name of the columns in the training_runs data.frame that represent the summary statistics
 #' (outputs) of the simulation model
-#' @param tol tolerance error for ABC: in practice what % of the original runs end up forming the posterior (default is 0.1)
+#' @param tol tolerance error for ABC: in practice what percentage of the original runs end up forming the posterior (default is 0.1)
 #' @param \dots other arguments passed to the \code{abc::abc} method
 #' @return A list containing the basic estimation results
 #'  \itemize{
@@ -1164,7 +1164,7 @@ fit_loclinear_abc<-function(training_runs,target_runs,
 #' simulation model
 #' @param summary_statistics_colnames The name of the columns in the training_runs data.frame that represent the summary statistics
 #' (outputs) of the simulation model
-#' @param tol tolerance error for ABC: in practice what % of the original runs end up forming the posterior (default is 0.1)
+#' @param tol tolerance error for ABC: in practice what percentage of the original runs end up forming the posterior (default is 0.1)
 #' @param cv_seed random seed controlling how CV groups are formed: keep it constant to compare cross-validations across methods
 #' @param \dots passed to the abc fitting method
 #' @return A list containing the basic estimation results

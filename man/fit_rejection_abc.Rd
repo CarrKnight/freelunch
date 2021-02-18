@@ -28,7 +28,7 @@ simulation model}
 \item{summary_statistics_colnames}{The name of the columns in the training_runs data.frame that represent the summary statistics
 (outputs) of the simulation model}
 
-\item{tol}{tolerance error for ABC: in practice what % of the original runs end up forming the posterior (default is 0.1)}
+\item{tol}{tolerance error for ABC: in practice what percentage of the original runs end up forming the posterior (default is 0.1)}
 
 \item{\dots}{other arguments passed to the \code{abc::abc} method}
 }
