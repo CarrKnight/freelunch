@@ -1,4 +1,4 @@
-Untitled
+freelunch
 ================
 
 ## An R-package for estimating simulation models
@@ -18,6 +18,10 @@ the same random samples of input-outputs from the model
 Install from github with the `devtools` package
 
 ``` r
+##Might need to uncomment this line on windows/mac
+##if you don't build packages from sources:
+##Sys.setenv("R_REMOTES_NO_ERRORS_FROM_WARNINGS" = "true")
+
 devtools::install_github("carrknight/freelunch")
 ```
 
@@ -30,6 +34,7 @@ with two summary statistics (`ssone` and `sstwo`). Let’s run it 5,000
 times with random inputs:
 
 ``` r
+set.seed(0)
 library(tidyverse)
 #> ── Attaching packages ─────────────────────────────────────── tidyverse 1.3.0 ──
 #> ✓ ggplot2 3.3.2     ✓ purrr   0.3.4
@@ -54,10 +59,10 @@ training_data<-
 glimpse(training_data)
 #> Rows: 5,000
 #> Columns: 4
-#> $ paramone <dbl> -1.49925090, 0.77930485, -0.11855318, 1.62862359, -0.6053850…
-#> $ paramtwo <dbl> 4.714606, 4.793326, 2.022283, 4.114443, 2.757072, 2.623399, …
-#> $ ssone    <dbl> -3.9558796, 1.9985657, 0.8882986, 3.3978586, -0.3092349, -0.…
-#> $ sstwo    <dbl> -0.03048658, -1.48329202, -0.37564557, 1.27804038, -0.560951…
+#> $ paramone <dbl> 1.262954285, -0.326233361, 1.329799263, 1.272429321, 0.41464…
+#> $ paramtwo <dbl> 3.958031, 2.194137, 4.029837, 4.206115, 2.333899, 2.139964, …
+#> $ ssone    <dbl> 3.359710942, 1.218960188, 2.257928728, 1.458035651, 1.009250…
+#> $ sstwo    <dbl> 0.62009255, -1.35464108, 1.12005078, 0.22611970, 0.16063519,…
 ```
 
 Let’s also assume that we have some real data that says that `ssone` is
@@ -109,19 +114,19 @@ estimation<-
 tidy_up_estimation(estimation) %>% knitr::kable()
 ```
 
-| run | variable | estimate | higher\_bound | lower\_bound | real |
-|----:|:---------|---------:|--------------:|-------------:|-----:|
-|   1 | paramone | 0.716142 |      1.781343 |   -0.3178313 |   NA |
-|   1 | paramtwo | 3.579385 |      4.880949 |    2.1006072 |   NA |
+| run | variable |  estimate | higher\_bound | lower\_bound | real |
+|----:|:---------|----------:|--------------:|-------------:|-----:|
+|   1 | paramone | 0.7413084 |      1.754302 |    -0.199027 |   NA |
+|   1 | paramtwo | 3.4300053 |      4.918831 |     2.057512 |   NA |
 
 Looking at these results, you must resist the urge of just looking at
 the estimate.  
-If you do, which is unfortunately common, you say: `paramone` is 0.73
-and `paramtwo` is 3.47.  
+If you do, which is unfortunately common, you say: `paramone` is 0.74
+and `paramtwo` is 3.43.  
 Once you look at the confidence intervals you get a better picture:
-`paramone` can be recovered somewhat (is positive, somewhere between 0
-and 1.7) but `paramtwo` bounds are basically anything from 2 to 5 which
-are suspiciously similar to the original bounds.
+`paramone` can be recovered somewhat (somewhere between -0.2 and 1.7)
+but `paramtwo` bounds are basically anything from 2 to 5 which are
+suspiciously similar to the original bounds.
 
 The key here is **never trust estimates without testing**, particularly
 point estimates!. Fortunately the package provides cross-validation
@@ -170,8 +175,8 @@ see that we do okay with `paramone` but `paramtwo`:
 
 ``` r
 abc.cv$performance 
-#>     paramone     paramtwo 
-#>  0.495549878 -0.003324784
+#>      paramone      paramtwo 
+#>  0.4969959391 -0.0005872575
 ```
 
 but coverage (out-of-sample probability that the real parameter is in
@@ -180,7 +185,7 @@ the 95% CI) is quite accurate (target here is 0.95):
 ``` r
 abc.cv$contained 
 #> paramone paramtwo 
-#>   0.9664   0.9454
+#>   0.9630   0.9412
 ```
 
 Summaries however only get you so far, sometimes it’s better to look at
@@ -196,7 +201,7 @@ how wide they are and how often the real point is contained within them:
 abc.cv %>% plot_confidence_intervals(limit_number_of_runs_to_plot_to = 120)
 ```
 
-![](Readme_files/figure-gfm/unnamed-chunk-9-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-9-1.png)<!-- -->
 
 This plot shows how `paramone` tends to have quite large confidence
 intervals but at least they are usually correct; for `paramtwo` the abc
@@ -209,7 +214,7 @@ stack up (best-case scenario all the dots are on the 45 degree line):
 abc.cv %>% plot_point_prediction_quality()
 ```
 
-![](Readme_files/figure-gfm/unnamed-chunk-10-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-10-1.png)<!-- -->
 
 And if the second plot doesn’t convince you that `paramtwo` is **NOT
 IDENTIFIED** then nothing else will.

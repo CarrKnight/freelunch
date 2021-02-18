@@ -533,10 +533,10 @@ abc_testing<-function(training_runs,target_runs,tol=DEFAULT_TOL,parameter_colnam
     lows<-bind_rows(lows,
                     data.frame(as.list(low)))
 
-    progress_bar$tick()
-    progress_bar$print()
+    knitrProgressBar::update_progress(progress_bar)
 
   }
+  knitrProgressBar::update_progress(progress_bar)
 
   #compute prediction errors
   rmse<-vector(mode="numeric",length=length(parameter_colnames))

@@ -1,5 +1,5 @@
 ---
-title: "Untitled"
+title: "freelunch"
 output: github_document
 editor_options: 
   chunk_output_type: console
@@ -25,6 +25,11 @@ Reference table methods (i.e. run the model a bunch of times at random then figu
 Install from github with the `devtools` package
 
 ```{r, eval=FALSE}
+
+##Might need to uncomment this line on windows/mac
+##if you don't build packages from sources:
+##Sys.setenv("R_REMOTES_NO_ERRORS_FROM_WARNINGS" = "true")
+
 devtools::install_github("carrknight/freelunch")
 ```
     
@@ -35,6 +40,7 @@ devtools::install_github("carrknight/freelunch")
 Imagine a simple 2 parameters (`paramone`,`paramtwo`) simulation model with two summary statistics (`ssone` and `sstwo`). Let's run it 5,000 times with random inputs:
 
 ```{r}
+set.seed(0)
 library(tidyverse)
 
 paramone<-rnorm(n=5000)
@@ -90,8 +96,8 @@ estimation<-
 tidy_up_estimation(estimation) %>% knitr::kable()
 ```
 Looking at these results, you must resist the urge of just looking at the estimate.  
-If you do, which is unfortunately common, you say: `paramone` is 0.73 and `paramtwo` is 3.47.  
-Once you look at the confidence intervals you get a better picture: `paramone` can be recovered somewhat (is positive, somewhere between 0 and 1.7) but `paramtwo` bounds are basically anything from 2 to 5 which are suspiciously similar to the original bounds.  
+If you do, which is unfortunately common, you say: `paramone` is 0.74 and `paramtwo` is 3.43.  
+Once you look at the confidence intervals you get a better picture: `paramone` can be recovered somewhat (somewhere between -0.2 and 1.7) but `paramtwo` bounds are basically anything from 2 to 5 which are suspiciously similar to the original bounds.  
 
 The key here is **never trust estimates without testing**, particularly point estimates!. Fortunately the package provides cross-validation helpers for testing.
 
@@ -156,6 +162,11 @@ abc.cv %>% plot_point_prediction_quality()
 ```
 
 And if the second plot doesn't convince you that `paramtwo` is **NOT IDENTIFIED** then nothing else will.
+
+
+
+
+
 
 
 
