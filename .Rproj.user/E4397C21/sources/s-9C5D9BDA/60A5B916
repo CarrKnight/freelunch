@@ -1,0 +1,25 @@
+{
+    "id": "60A5B916",
+    "path": "~/code/nofreelunch/bandwagon_small.Rmd",
+    "project_path": null,
+    "type": "r_markdown",
+    "hash": "0",
+    "contents": "",
+    "dirty": false,
+    "created": 1613381669118.0,
+    "source_on_save": false,
+    "relative_order": 5,
+    "properties": {
+        "chunk_output_type": "console",
+        "cursorPosition": "35,37",
+        "scrollLine": "0"
+    },
+    "folds": "",
+    "lastKnownWriteTime": 1609740615,
+    "encoding": "UTF-8",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1613545410531,
+    "read_only": false,
+    "read_only_alternatives": []
+}

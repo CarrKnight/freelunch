@@ -1,0 +1,234 @@
+---
+title: "Bandwagon small"
+author: "Ernesto Carrella"
+date: "February 16, 2019"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+set.seed(0)
+knitr::opts_chunk$set(echo = FALSE, warning= FALSE, message=FALSE,
+                      cache=TRUE,cache.extra = knitr::rand_seed,
+                      dpi = 300, fig.width = 13.3, fig.height = 10)
+library(abctools)
+source('./setup.R')
+library(tidyverse)
+FILENAME<-"bandwagon_small"
+bam_loess<-TRUE
+FILTER_TO_1250<-TRUE
+
+```
+
+
+
+
+```{r dataprep}
+# I add to add a "row.number" column name to the file to read this correctly
+dr_sumstat<-read_csv("./data/bandwagon/bandwagon.csv",
+                     col_names=TRUE) %>% select_if(function(x){var(x)>0})
+
+
+
+
+colnames(dr_sumstat) <-
+  colnames(dr_sumstat) %>% make.names(unique=TRUE,allow_ = FALSE)
+
+
+# I add to add a "row.number" column name to the file to read this correctly
+dr_parameters<-
+  read_csv("./data/bandwagon/params_bandwagon.csv",
+                     col_names=TRUE) %>%
+  dplyr::select(-`random-seed`)
+
+colnames(dr_parameters) <-
+  colnames(dr_parameters) %>% make.names(unique=TRUE,allow_ = FALSE)
+
+
+
+
+total_data<-
+  cbind(dr_parameters,dr_sumstat) 
+
+if(FILTER_TO_1250){
+  total_data<- total_data %>%
+  filter(row_number()<=1250)
+}
+
+total_data<-
+  total_data 
+
+
+
+param_names<-colnames(dr_parameters)
+x_names<-colnames(dr_sumstat)
+```
+
+# ABC
+
+## Rejection
+
+
+```{r rejection}
+rejection_cross<-
+  cross_validate_abc(total_data,ngroup=5,method="rejection",parameter_colnames = param_names)
+print_table(rejection_cross)
+
+```
+
+## Rejection - semiauto
+
+
+```{r rejection-sabc}
+rejection_cross_sabc<-
+  cross_validate_abc(total_data,ngroup=5,method="rejection",parameter_colnames = param_names,
+                     semiauto = TRUE)
+print_table(rejection_cross_sabc)
+
+```
+
+
+
+## Neural-Network
+
+```{r neuralnet, eval=TRUE, message= FALSE, results="hide"}
+neuralnet<-
+  cross_validate_abc(total_data,ngroup=5,method="neuralnet",
+                     hcorr=TRUE,parameter_colnames = param_names)
+
+```
+```{r, eval=TRUE}
+print_table(neuralnet)
+
+```
+
+# Linear regression
+
+
+## Degree 1
+
+```{r lm}
+lm_cross<-
+  cross_validate_lm(total_data,ngroup=5,
+                    parameter_colnames = param_names,x_names=x_names,
+                     degree=1)
+print_table(lm_cross)
+
+```
+
+# Random Forest
+
+
+
+```{r rf}
+rf_cross<-
+  cross_validate_rf(total_data,ngroup=5,
+                    parameter_colnames = param_names,x_names=x_names)
+print_table(rf_cross)
+
+```
+
+
+# Random Forest (boot)
+
+
+
+```{r rfboot, results="hide"}
+rfboot_cross<-
+  cross_validate_rfboot(total_data,ngroup=5,
+                    parameter_colnames = param_names,x_names=x_names)
+
+```
+
+```{r rfboottable}
+print_table(rfboot_cross)
+```
+
+
+
+# Loess Fit
+
+
+
+```{r loess}
+loess_cross<- cross_validate_loess(total_data,ngroup=5,
+                    parameter_colnames = param_names,
+                    x_names=x_names,
+                    bam=bam_loess)
+print_table(loess_cross)
+
+```
+
+
+
+## Rejection - 1D
+
+
+```{r rejection-sabc1d}
+rejection_cross_sabc1d<-
+  cross_validate_abc(total_data,ngroup=5,method="rejection",parameter_colnames = param_names,
+                     semiauto = TRUE,
+                     satr=list(function(x){outer(x,Y=1,"^")}))
+print_table(rejection_cross_sabc1d)
+
+```
+
+
+## Loclin
+
+
+```{r loclin, eval=FALSE}
+loclin_cross<-
+  cross_validate_abc(total_data,ngroup=5,method="loclinear",
+                     hcorr=TRUE,parameter_colnames = param_names,
+                     semiauto = FALSE)
+print_table(loclin_cross)
+
+```
+
+# Average
+
+
+
+```{r average}
+average_cross<- cross_validate_average(total_data,ngroup=5,
+                    parameter_colnames = param_names,
+                    x_names=x_names)
+print_table(average_cross)
+
+```
+
+```{r, writetocsv, eval=TRUE}
+
+crosses<-
+  list(
+    rejection = rejection_cross,
+    sabc_4d = rejection_cross_sabc,
+    sabc_1d = rejection_cross_sabc1d,
+   # loclin = loclin_cross, 
+    neuralnet = neuralnet,
+    lm = lm_cross,
+    rf = rf_cross,
+    loess = loess_cross,
+    rfboot = rfboot_cross,
+    average = average_cross
+  )
+
+write_csv(
+  map2_df(crosses,names(crosses),~ as_data_frame(t(.x$error)) %>% 
+            mutate(method=.y)) %>% gather(parameter,value,-method), 
+  paste("./errors/",FILENAME,".csv",sep="")
+)
+
+write_csv(
+  map2_df(crosses,names(crosses),~ as_data_frame(t(.x$contained)) %>% 
+            mutate(method=.y)) %>% gather(parameter,value,-method),   paste("./contained/",FILENAME,".csv",sep="")
+)
+
+write_csv(
+  map2_df(crosses,names(crosses),~ as_data_frame(t(.x$interval)) %>% 
+            mutate(method=.y)) %>% gather(parameter,value,-method), 
+  paste("./intervals/",FILENAME,".csv",sep="")
+)
+```
