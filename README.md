@@ -8,10 +8,11 @@ This package provides a common interface for a bunch of
 
 Reference table methods (i.e. run the model a bunch of times at random
 then figure out how the real data matches the original parameters) are
-very inefficient but they have three big advantages: 1. They quickly
-produce *confidence intervals* for estimated parameters 2. They are
-**easily testable** by cross-validation 3. They can all be ranked using
-the same random samples of input-outputs from the model
+very inefficient but they have three big advantages:
+
+    1. They quickly produce *confidence intervals* for estimated parameters
+    2. They are **easily testable** by cross-validation
+    3. They can all be ranked using the same random samples of input-outputs from the model
 
 ## Installation
 
@@ -24,6 +25,9 @@ Install from github with the `devtools` package
 
 devtools::install_github("carrknight/freelunch")
 ```
+
+This package has a lot of dependecies, so the installation will take a
+while. Sorry!
 
 ## Very quick guide
 
@@ -92,8 +96,7 @@ fit_gam(...)
 ```
 
 The four parameters needed are just the `training_runs` (data-frame),
-the real data observed `target_runs` (can be a vector or a data.frame,
-you can also provide it with the “real” parameters if you are testing),
+the real data observed `target_runs` (can be a vector or a data.frame),
 the column names that refer to the parameter `parameter_colnames` and
 the column names that refer to `summary_statistics_colnames`.
 
@@ -170,8 +173,9 @@ abc.cv<-
 ```
 
 If we look at performance<sup id="a1">[1](#f1)</sup> (which goes from 0,
-our point predictions are awful, to 1 point predictions are perfect) we
-see that we do okay with `paramone` but `paramtwo`:
+our point predictions are awful, to 1, point predictions are perfect) we
+see that we do okay with `paramone` but `paramtwo` predictions are
+simply useless:
 
 ``` r
 abc.cv$performance 
@@ -179,8 +183,8 @@ abc.cv$performance
 #>  0.4969959391 -0.0005872575
 ```
 
-but coverage (out-of-sample probability that the real parameter is in
-the 95% CI) is quite accurate (target here is 0.95):
+however, coverage (out-of-sample probability that the real parameter is
+in the 95% CI) is quite accurate (target here is 0.95):
 
 ``` r
 abc.cv$contained 
@@ -194,8 +198,11 @@ the effect visually
 ## Plots
 
 Two plot commands can help understand the quality of our estimations and
-cross-validation. First, we can look at confidence intervals (red dots),
-how wide they are and how often the real point is contained within them:
+cross-validation. First, we can look at confidence intervals (black
+error bars), how wide they are and how often the real parameter (red
+dots) is contained within them.  
+Ideally what we want is very small confidence intervals with the red
+dots in them about 95% of the times.
 
 ``` r
 abc.cv %>% plot_confidence_intervals(limit_number_of_runs_to_plot_to = 120)
