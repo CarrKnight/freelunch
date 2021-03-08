@@ -1,5 +1,5 @@
 ---
-title: "Crossvalidating Shelling"
+title: "Crossvalidating Schelling"
 author: "Ernesto Carrella"
 date: "February 2021"
 output: 
@@ -7,7 +7,7 @@ output:
     fig_width: 8
     fig_height: 6
 vignette: >
-  %\VignetteIndexEntry{Crossvalidating Shelling}
+  %\VignetteIndexEntry{Crossvalidating Schelling}
   %\VignetteEncoding{UTF-8}
   %\VignetteEngine{knitr::rmarkdown}
 editor_options: 
@@ -17,27 +17,38 @@ editor_options:
 ```{r setup, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
+  cache.extra = knitr::rand_seed,
+  warning=FALSE,
+  message=FALSE,
   comment = "#>"
 )
+set.seed(0)
+
 ```
 
 ## What's this?
 
 The gist of this package is to quickly estimate simulation parameters from data using "*reference table*" methods i.e.
 
-1. You ran the model a bunch of times feeding it random parameters
-2. You collected for each set of parameters you put in, a set of summary statistics the model spat out
-3. You now have this data-sets of input-output simulations you can use it to train a regression/run an Approximate Bayesian Computaiton
-4. Use what you trained to estimate the REAL parameters by feeding it the REAL summary statistics you observe.
+1. Run the model a bunch of times feeding it random parameters
+2. Collect for each set of parameters you put in, a set of summary statistics describing what the model outputs
+3. Try to generalize this data-set of input-output simulations via a regression/run an Approximate Bayesian Computaiton
+4. Use the generalization to estimate the REAL parameters observing REAL summary statistics.
 
-It's a terribly inefficient way of estimating models compared to search-based methods but it is very flexible and more importantly (i) it is **quickly testable** (ii) it produces decent **confidence intervals**. I go on and on in the [paper](https://carrknight.github.io/assets/nofreelunch.html) on how these features are far more important than efficiency so let's try to explain why.
+It's an **extremely inefficient** way of estimating models compared to search-based methods but it is has also many advantages:
 
-## Estimating Shelling with ONE summary statistics
+1. It produces decent **confidence intervals**
+2. It is **quickly testable** (figure out how good the estimates/CI are) 
+3. It's all "post-processing": all it needs is a csv files with a bunch of random runs, no need to mess around with NETLOGO or whatever else you are using to run the model
 
-We are studying the housing spatial distribution of 4 racial groups within a city and we notice a steady trend towards segregation. We think the Shelling segregation model could provide a good explanation for it so we want to estimate its parameters given the data we have.  
-Unfortunately the only data we have is that "similarity" (% of people of the same race being neighbors) has increased steadily, at a linear trend of about .1 per month.
+I go on and on in the [paper](https://carrknight.github.io/assets/nofreelunch.html) on how these features are far more important than efficiency so let's try to explain why.
 
-So what we do is that we take a [NETLOGO version](https://www.comses.net/codebases/7c562b23-4964-4d28-862c-1c8b254fd6ad/releases/1.0.0/) of the famous Shelling segregation model and just run it a bunch of times with random parameters.  
+## Estimating Schelling with ONE summary statistics
+
+We are studying the housing spatial distribution of 4 racial groups within a city and we notice a steady trend towards segregation. We think the Schelling segregation model could provide a good explanation for it so we want to estimate its parameters given the data we have.  
+Unfortunately the only data we have is that "similarity" (% of people of the same race being neighbors, i.e. segregation) has increased steadily, at a linear trend of about .1 per month.
+
+So what we do is that we take a [NETLOGO version](https://www.comses.net/codebases/7c562b23-4964-4d28-862c-1c8b254fd6ad/releases/1.0.0/) of the famous Schelling segregation model and just run it a bunch of times with random parameters.  
 This package comes with those runs already done so let's load them!
 ```{r}
 library(tidyverse)
@@ -47,10 +58,10 @@ library(freelunch)
 data("shelling")
 glimpse(shelling)
 ```
-We ran the model 5,000 times changing its three parameters `density`(between 50 and 99), `radiusNeighborhood`(between 1 and 5) and `X..similar.wanted` (% of similiar people wanted in one's neigbhorhood, between 25% and 75%). Besides the `random-seed` we collected 77 summary statistics (basic min/max/trend and snapshots for a few time series).
+We ran the model 5,000 times changing its three parameters `density`(controls how much "free" space is there for people to move about; set to between 50 and 99), `radiusNeighborhood`(how large spatially people look when judging their neighbors; between 1 and 5) and `X..similar.wanted` (% of similiar people wanted in one's neigbhorhood, between 25% and 75%). Besides the `random-seed` we collected 77 summary statistics (basic min/max/trend and snapshots for a few time series).
 
 Of course in reality as we said we only have one summary statistic: `trend.percent.similar` is 0.1.  
-We can try to estimate the three unknown Shelling parameter with that one summary statistic we have. Let's try a simple rejection ABC
+We can try to estimate the three unknown Schelling parameters with that one summary statistic we have. Let's try a simple rejection ABC
 ```{r, message=FALSE}
 estimation<-freelunch::fit_rejection_abc(training_runs = shelling,
                                target_runs = c(0.1),
@@ -59,9 +70,11 @@ estimation<-freelunch::fit_rejection_abc(training_runs = shelling,
 )
 freelunch::tidy_up_estimation(estimation) %>% knitr::kable()
 ```
-Well, we do get an estimate for the three parameters but when we look at their confidence interval, the range is huge (not much different from our original bounds). 
+Well, we do get an estimate for the three parameters but accepting it at face value is very dangerous. Is it a good estimate?  
+The first alarm bell starts ringing when we look at the confidence intervals: they are huge! Not much different from our original bound, in fact.
 
-However the only real way to judge whether these results make sense is to check out-of-sample performance of our estimation method given the data we have. We can do this in one line here:
+In practice however wide CIs alone are just a hint (and they could be wrong too!). If we want to know how good our estimate are we need to test the estimation method itself. We do this by cross-validation (taking some runs and pretending it's the real data to see if we estimate their parameters correctly).  
+We can do this in one line here:
 ```{r, message=FALSE}
  abc_cv<-cross_validate_rejection_abc(total_data  = shelling,
                                ngroup = 5,
@@ -75,32 +88,37 @@ And the results are awful.
 Performance, defined as 1 minus the ratio of mean square root error of the method (abc here) and just guessing the average, goes from zero (the estimation is no better than just guessing the average) to 1 (perfect estimation).
 Performance of zero means that both radius and %-similarity are not identified at all. Density has also abysmal performance. My hand rule is that things start looking somewhat identified when performance reaches 0.3; however in practice it's just much easier to just check visually what we have managed to estimate. 
 
-Let's start with looking at confidence intervals:
+
+The confidence intervals seem to be a bit too large since their coverage (the % of time the real parameter is in the CI) exceeds the target of 95%:
+```{r}
+abc_cv$contained
+```
+
+and we can confirm this visually::
 ```{r}
 plot_confidence_intervals(abc_cv,limit_number_of_runs_to_plot_to = 60) +
   theme_minimal()
 ```
 
-Red dots are the "real" value and the error bars are the CI of our estimations. Again, it's clear we haven't really discovered anything: the CIs are very wide.  
-Notice however that it seems to be possible to narrow down the % similarity wanted parameter when it's around 40%-65%. This makes sense since that's the sweet-spot of Shelling (much lower nobody moves, much higher everybody is always dissatisfied and moves).
+Red dots are the "real" value and the error bars are the CI of our estimations. Again, it's clear we haven't really discovered anything: the CIs are very wide and about the size of the original priors. ABC is refusing to make a call.    
+Notice however that it seems to be possible to narrow down the % similarity wanted parameter when it's around 40%-65%. This makes sense since that's the sweet-spot of Schelling (much lower nobody moves, much higher everybody is always dissatisfied and moves).
 
-We can look also at point-prediction quality, which is just dreadful
+We can look also at point-prediction quality, which is just as dreadful
 ```{r}
 plot_point_prediction_quality(abc_cv) 
 ```
 
-We would like points to stay on the 45 degree line and instead they are everywhere. I think it's clear ABC here doesn't work.
-
+We would like points to stay on the 45 degree line and instead they are everywhere. I think it's clear the estimation here doesn't work.  
 The model is **under-identified** with the data we have!
 
-We could try with something a bit more fancy, like a random forest but it ends up being no better:
-```{r, message=FALSE}
-rf_cv<-cross_validate_random_forest(total_data  = shelling,
+We could try with something a bit more fancy, like a local-linear ABC but it ends up being no better (in fact slightly worse!):
+```{r, message=FALSE }
+ll_cv<-cross_validate_loclinear_abc(total_data  = shelling,
                                ngroup = 5,
                                parameter_colnames = c("density","radiusNeighborhood","X..similar.wanted"),
                                summary_statistics_colnames = c("trend.percent.similar")
 )
-rf_cv$performance
+ll_cv$performance
 ```
 
 We could (should) try other methods but it it seems that you are just unable to estimate those parameters with just one summary statistic.
@@ -110,11 +128,11 @@ We could (should) try other methods but it it seems that you are just unable to 
 
 ### Trend in general unhappiness
 
-So we couldn't quite estimate anything just looking at the trend is similarity over time.  What if we tried something a bit better.
+So we couldn't quite estimate anything just looking at the segregation trend.  What if we tried adding more data?
 
-Imagine that we rummage through the real data and we discover that together with a trend in segregation, somebody ran a monthly survey asking people if they were unhappy about their neighbors and were planning to move. This nets us a second trend and we can plug it in to see the effects.
+Imagine that we rummage through the real data and discover that together with a trend in segregation, somebody ran a monthly survey asking people if they were unhappy about their neighbors and were planning to move. This nets us a second trend (`trend.percent.unhappy`) and we can plug it in to see the effects.
 
-So we run again the cross-validation with one more summary statistic, this time using GAM.
+So we run again the cross-validation with one more summary statistic, this time using GAM (because we are fancy and probably listen to radio 4 on our way to work).
 ```{r, message=FALSE}
 gam_cv<-cross_validate_gam(shelling,ngroup=5,
                              parameter_colnames = c("density","radiusNeighborhood","X..similar.wanted"),
@@ -125,7 +143,7 @@ gam_cv<-cross_validate_gam(shelling,ngroup=5,
                                    "trend.percent.similar"))
 gam_cv$performance
 ```
-Unfortunately performance is still very low, and it's clear by looking at plots that we are still far from properly estimating the model.  
+Unfortunately performance is still very low, and it's clear by looking at the plots that we are still far from properly estimating the model.  
 
 ```{r}
 gam_cv %>% plot_confidence_intervals()
@@ -134,10 +152,10 @@ gam_cv %>% plot_confidence_intervals()
 
 ### Trend in general unhappiness - per population
 
-We go back to the data and see that we could extract from that monthly survey not just the overall trend in unhappiness among the general population but also the same trend for two sub-populations: "red" group (which is the majority) and "blue" group (which is one of the minorities).  
+We go back to the data and see that we can  disaggregate the overall trend in unhappiness and compute it separately for two of the four sub-populations: the "red" population  (which is the majority) and "blue" population (which is one of three minorities).  
 
 This leaves us with four summary statistics.
-Let's switch back to random forests for this, maybe using the "quick and dirty" option to run it quickly:
+Let's switch to random forests for this, maybe using the "quick and dirty" option to run it quickly:
 ```{r, message=FALSE}
 gam_rf<-cross_validate_random_forest(shelling,ngroup=5, fast=TRUE,
                              parameter_colnames = 
@@ -185,7 +203,7 @@ tidy_up_estimation(estimation) %>% knitr::kable()
 
 ```
 
-So it is still quite difficult to get neighborhood and density narrowed down but at least we know that "% of similarity wanted" is somewhere between 56.7% and 68.1%; the scientific proof that people are quite racist. Time to tweet the results and harvest the likes.
+So it is still quite difficult to get neighborhood and density narrowed down but at least we know that "% of similarity wanted" is somewhere between 56% and 68%; the scientific proof that people are quite racist. Time to tweet the results and harvest the likes.
 
 ### What next?
 

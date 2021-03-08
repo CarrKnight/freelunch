@@ -1,0 +1,207 @@
+---
+title: "A quick introduction to the `freelunch` package with two examples"
+date: "3/4/2021"
+output: 
+  rmarkdown::html_vignette:
+    fig_width: 8
+    fig_height: 6
+vignette: >
+  %\VignetteIndexEntry{Two simple examples of cross-validation and fit}
+  %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  cache.extra = knitr::rand_seed,
+  warning=FALSE,
+  message=FALSE,
+  comment = "#>"
+)
+set.seed(0)
+
+set.seed(0)
+options(scipen=999)
+```
+## Introduction
+
+The package `freelunch` is composed of a series of functions that help estimate models and check the performance of estimated models by cross-validation.  
+In this package the methods to estimate parameters all start with `fit_*` and they all have the same interface requiring 4 arguments:
+
+```{r, eval=FALSE}
+fit_rejection_abc(training_runs = ...,
+                  target_runs =  ...,
+                  parameter_colnames =...,
+                  summary_statistics_colnames = ...
+                  )
+fit_loclinear_abc(...)
+fit_semiauto_abc(...)
+fit_neural_network_abc(...)
+fit_linear_regression(...)
+fit_gam(...)
+fit_quantile_random_forest(...)
+fit_random_forest(...)
+fit_gam(...)
+```
+
+The four parameters needed are just the `training_runs` (i.e. the reference table), the real data observed `target_runs`, `parameter_colnames` ( the column names that refer to the parameter in the reference table) and `summary_statistics_colnames` (the column names that refer to summary statistics).
+
+
+The testing methods in this package all start with `cross_validate_*` and have the same interface:
+
+```{r, eval=FALSE}
+cross_validate_rejection_abc(total_data = ...,
+                             parameter_colnames = ...,
+                             summary_statistics_colnames = ...
+                  )
+cross_validate_loclinear_abc(...)
+cross_validate_semiauto_abc(...)
+cross_validate_neural_network_abc(...)
+cross_validate_linear_regression(...)
+cross_validate_gam(...)
+cross_validate_quantile_random_forest(...)
+cross_validate_random_forest(...)
+cross_validate_gam(...)
+```
+
+## A simple example
+
+Here we generate the output of a simple 2 by 2 model, where `paramone` and `paramtwo` generate `ssone` and ``sstwo`. We collect 5,000 runs in a reference table:
+
+```{r}
+
+library(freelunch)
+library(tidyverse)
+
+##paramone's prior is  normally distributed 
+paramone<-rnorm(n=5000)
+##paramtwo's prior is  uniformly distributed 
+paramtwo<-runif(n=5000,min=2,max=5)
+##this is the extend of the model: 
+ssone<-2*paramone + rnorm(n=5000)
+sstwo<- paramone/paramtwo  + rnorm(n=5000)
+## collect the runs in a reference table!
+reference_table<-
+  data.frame(
+    paramone,
+    paramtwo,
+    ssone,
+    sstwo
+  )
+
+```
+
+Our task is to recover `paramone` and `paramtwo` having only observed the summary statistics. All the estimation algorithms in the paper have been implemented but here we focus on GAM:
+
+```{r}
+gam.cv<-
+  freelunch::cross_validate_gam(total_data=reference_table,
+                                parameter_colnames = c("paramone","paramtwo"),
+                                summary_statistics_colnames = c("ssone","sstwo"))
+```
+
+By looking at performance, we see that `paramone` is relatively well identified but `paramtwo` is simply not. However in terms of confidence intervals, we see that they are both contained at about 95%:
+```{r}
+
+gam.cv$performance 
+
+
+gam.cv$contained %>% scales::percent()
+
+```
+
+Which means that the algorithm knows it fails to find a good parameter estimate for `paramtwo` and defaults to returning large confidence intervals. We can see this graphically by running an helper plot (red dots being the true value, black lines being the confidence intervals):
+
+```{r}
+freelunch::plot_confidence_intervals(gam.cv)
+
+```
+
+Now we can estimate the model using the real data, which here we pretend to be `ssone=1.37` and `sstwo=1.11`.
+
+```{r}
+estimates<-
+  freelunch::fit_gam(training_runs = reference_table,
+                     target_runs = c(1.37,1.11),
+                      parameter_colnames = c("paramone","paramtwo"),
+                                summary_statistics_colnames = c("ssone","sstwo"))
+```
+
+Which estimates `paramone` somewhere between -0.3 and 1.49 while `paramtwo` across its whole range:
+
+```{r}
+estimates$predictions
+
+estimates$lows
+
+estimates$highs
+```
+
+## An ill-posed example
+
+The classic example of under-identified model: two people with weights `weight1` and `weight2` stand together on a scale and we read their combined weight `total`.  
+Reading only `total` we are asked to get the two individual weights. We observe the total weight of 5,000 pairs of people. There is already an example of this in the package so we just load it here:
+```{r}
+
+data("scale_experiment")
+glimpse(scale_experiment)
+
+```
+
+We can try to solve this problem with rejection ABC and random forests. We first perform a standard set of cross-validations:
+
+```{r }
+
+
+abc.cv<-cross_validate_rejection_abc(total_data = scale_experiment,
+                                     parameter_colnames = c("weight1","weight2"),
+                                     summary_statistics_colnames = c("total"))
+
+rf.cv<-cross_validate_random_forest(total_data = scale_experiment,
+                                    parameter_colnames = c("weight1","weight2"),
+                                    summary_statistics_colnames = c("total"))
+
+```
+
+We then discover that rejection ABC performs better than random forests for both parameters. This makes sense since the main advantage of random forests (weighing multiple conflicting summary statistics) is null here.
+
+```{r}
+##
+abc.cv$performance
+rf.cv$performance
+```
+
+Now, while it is nice to know the general performance, a bit more analysis will provide further insights. 
+For example here the performance of the rejection ABC is not consistent across the parameter space. The individual weights are easier to guess when both people are either very light or very heavy; the estimation will also work if both people on the scale are about of the same size since rejection ABC tends to default to averaging weights when in doubt.
+We can see this graphically plotting the average RMSE for a grid of parameters:
+
+```{r}
+
+freelunch::plot_grid_rmse(abc.cv,parameter1="weight1",parameter2="weight2",
+               intervals_first_parameter = 15,intervals_second_parameter = 15)
+
+```
+
+Which is useful because it tells us that the method is very poor at estimating individual weights when one person is heavy and the other is thin.
+
+Eventually if the applied work tells us that the "real life" observation we are trying to estimate has `total=200`, we can estimate with abc as follows:
+```{r }
+
+
+abc.estimate<-fit_rejection_abc(training_runs = scale_experiment,
+                                target_runs = c(200),
+                                parameter_colnames = c("weight1","weight2"),
+                                summary_statistics_colnames = c("total"))
+
+abc.estimate$predictions
+
+abc.estimate$lows
+
+abc.estimate$highs
+```
+Which guesses a weight of approximately 100 for both individuals, with a confidence interval between approximately 80 and 120.
+
+

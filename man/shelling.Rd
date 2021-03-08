@@ -3,7 +3,7 @@
 \docType{data}
 \name{shelling}
 \alias{shelling}
-\title{Arabidopsis QTL data on gravitropism}
+\title{(sorry about the mispelling!)}
 \format{
 An object of class \code{"tibble"};
 }
@@ -14,7 +14,7 @@ An object of class \code{"tibble"};
 data(shelling)
 }
 \description{
-Output from 5,000 replications of the 4-populations shelling model from Flache NETLOGO model.
+Output from 5,000 replications of the 4-populations schelling model from Flache NETLOGO model.
 We vary three parameters \code{density}, \code{X..similar.wanted}
 (\code{X..} is the R friendly way of writing percent) and \code{radiusNeighborhood}.
 The other 77 columns summary statistics are summary statistics (outputs) of the model

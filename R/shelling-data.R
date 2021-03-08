@@ -1,6 +1,6 @@
-#' Arabidopsis QTL data on gravitropism
+#' (sorry about the mispelling!)
 #'
-#' Output from 5,000 replications of the 4-populations shelling model from Flache NETLOGO model.
+#' Output from 5,000 replications of the 4-populations schelling model from Flache NETLOGO model.
 #' We vary three parameters \code{density}, \code{X..similar.wanted}
 #' (\code{X..} is the R friendly way of writing percent) and \code{radiusNeighborhood}.
 #' The other 77 columns summary statistics are summary statistics (outputs) of the model
@@ -13,6 +13,7 @@
 #' @format An object of class \code{"tibble"};
 #'
 #' @keywords datasets
+#'
 #'
 #' @references Flache, A., & de Matos Fernandes, C. A. (2021). Agent-based computational models. In G. Manzo (Ed.), Research Handbook on Analytical Sociology. Cheltenham: Edward Elgar.
 #'
@@ -33,5 +34,3 @@
 #'                              fast=TRUE)
 #' rf.shelling$performance
 "shelling"
-
-

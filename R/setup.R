@@ -801,7 +801,7 @@ cross_validate_rejection_abc<-function(total_data,ngroup=5,
 #'                 parameter_colnames = c("paramone","paramtwo"),
 #'                 summary_statistics_colnames = c("ssone","sstwo"),
 #'                 degree = 4)
-#')
+#'
 fit_semiauto_abc<-function(training_runs,target_runs,
                            parameter_colnames,
                            summary_statistics_colnames,
@@ -2418,6 +2418,59 @@ plot_point_prediction_quality<-function(estimation){
   )
   patchwork::wrap_plots(plot_list)
 }
+
+#' Produces a tile plot showing for two chosen parameters the total root mean square error at different intervals
+#' The idea here is to look at a 2D slice of a multi-parameter model to see if any particular space of the model
+#' is better identified than the rest.
+#'
+#' I find this plot particularly useful to spot when estimation is better/worse for
+#' a sub-interval of the parameter range
+#' #'
+#' @param estimation the output of one of the \code{fit_} or \code{cross_validate_} calls in this package
+#' @return A single ggplot
+#' @export
+#'
+#' @examples
+#' ##check the data scale
+#' data("scale")
+#' abc.cv<-cross_validate_rejection_abc(total_data = scale,
+#'                                      parameter_colnames = c("weight1","weight2"),
+#'                                      summary_statistics_colnames = c("total"))
+#'
+#'
+plot_grid_rmse<-function(estimation,
+                         parameter1,
+                         parameter2,
+                         intervals_first_parameter=10,
+                         intervals_second_parameter=10){
+  tidied<-tidy_up_estimation(estimation)
+  #parameters<- tidied %>% pull(variable) %>% unique()
+  ## first of all compute RMSE per run
+  rmse_table<-tidied %>% mutate(error = (real-estimate)^2) %>% group_by(run) %>% summarise(rmse=sqrt(mean(error)))
+  ## now cut up the parameters into intervals
+  intervals_first_parameter<-10
+  intervals_second_parameter<-10
+
+  intervals_table<-
+    tidied %>%
+    filter(variable %in% c(parameter1,parameter2))  %>%
+    select(run,variable,real) %>%
+    spread(variable,real) %>%
+    mutate(!!parameter1:=cut_interval(.data[[parameter1]],n=intervals_first_parameter),
+           !!parameter2:=cut_interval(.data[[parameter2]],n=intervals_second_parameter))
+
+  left_join(rmse_table,intervals_table) %>%
+    ggplot(aes_string(x=parameter1,
+                      y=parameter2,
+                      fill="rmse")) +
+    geom_tile() +
+    scale_fill_gradient(name="Root Mean\nSquare Error",
+                        low="white",high="red") +
+    xlab(parameter1) + ylab(parameter2) +
+    scale_x_discrete(guide = guide_axis(n.dodge = 2))
+}
+
+
 
 ## todo: would like to add mxnet fits, but seems impossible to install
 ## would like to add BACCO fits, but no idea on how to choose GP hyper-pameters
