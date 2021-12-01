@@ -92,7 +92,6 @@ fit_linear_regression(...)
 fit_gam(...)
 fit_quantile_random_forest(...)
 fit_random_forest(...)
-fit_gam(...)
 ```
 
 The four parameters needed are just the `training_runs` (data-frame),
@@ -152,7 +151,6 @@ cross_validate_linear_regression(...)
 cross_validate_gam(...)
 cross_validate_quantile_random_forest(...)
 cross_validate_random_forest(...)
-cross_validate_gam(...)
 ```
 
 What happens here is that we split the runs into some (5 by default)
